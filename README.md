@@ -1,8 +1,5 @@
 # React + TypeScript + Vite
 
-## Component Diagram
-
-````mermaid
 graph TD
   subgraph Ground_Control_Station
     UI[Web UI]
