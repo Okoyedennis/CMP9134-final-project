@@ -2,5 +2,10 @@
 /.idea/
 /.env
 **/.env
+.gitignore
+**/.gitignore
 node_modules
 **/node_modules
+
+/dist
+**/dist/
