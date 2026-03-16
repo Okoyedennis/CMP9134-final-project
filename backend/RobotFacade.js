@@ -4,6 +4,8 @@ class RobotFacade {
   async moveRobot(x, y) {
     try {
       const result = await robotAPI.moveRobot(x, y);
+      console.log(result);
+
       return { success: true, message: "Move successful", data: result };
     } catch (error) {
       return {
@@ -16,8 +18,9 @@ class RobotFacade {
 
   async getStatus() {
     try {
-      const status = await robotAPI.getStatus();
-      return { success: true, message: "Robot status fetched", status };
+      const data = await robotAPI.getStatus();
+
+      return { success: true, message: "Robot status fetched", data };
     } catch (error) {
       return {
         success: false,
@@ -30,6 +33,8 @@ class RobotFacade {
   async resetRobot() {
     try {
       const resetResult = await robotAPI.resetRobot();
+      console.log(resetResult);
+
       return {
         success: true,
         message: "Robot reset successful",

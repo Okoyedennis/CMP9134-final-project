@@ -1,11 +1,26 @@
 import express from "express";
 import robotFacade from "./RobotFacade.js";
+import cors from "cors";
+
 const app = express();
 const port = 3000;
 
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+app.use(cors());
+
 // Define Routes
-app.get("/move", async (req, res) => {
-  const { x, y } = req.query; // Get coordinates from query params
+app.post("/move", async (req, res) => {
+  const { x, y } = req.body;
+
+  if (x === undefined || y === undefined) {
+    return res.status(400).json({
+      error: "Missing coordinates",
+      receivedBody: req.body,
+    });
+  }
+
   const result = await robotFacade.moveRobot(x, y);
   res.json(result);
 });
@@ -15,7 +30,7 @@ app.get("/status", async (req, res) => {
   res.json(result);
 });
 
-app.get("/reset", async (req, res) => {
+app.post("/reset", async (req, res) => {
   const result = await robotFacade.resetRobot();
   res.json(result);
 });

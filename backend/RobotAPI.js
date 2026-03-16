@@ -24,6 +24,7 @@ class RobotAPI {
         "Content-Type": "application/json",
         Authorization: `Bearer ${this.token}`,
       },
+
       body: JSON.stringify({ x, y }),
     });
     return await response.json();
@@ -33,7 +34,9 @@ class RobotAPI {
     const response = await fetch(`${this.apiEndpoint}/api/reset`, {
       method: "POST",
       headers: { Authorization: `Bearer ${this.token}` },
+      // body: "",x
     });
+
     return await response.json();
   }
 
