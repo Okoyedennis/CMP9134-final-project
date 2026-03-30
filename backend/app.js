@@ -27,7 +27,12 @@ app.post("/move", async (req, res) => {
 
 app.get("/status", async (req, res) => {
   const result = await robotFacade.getStatus();
-  res.json(result);
+
+  // if (!result.success) {
+  //   return res.status(500).json(result);
+  // }
+
+  return res.json(result);
 });
 
 app.post("/reset", async (req, res) => {

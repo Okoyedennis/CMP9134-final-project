@@ -15,6 +15,7 @@ interface MoveControlsProps {
   disabled?: boolean;
   onReset: () => Promise<void>;
   isResetting?: boolean;
+  showNotification: (message: string, type?: string) => void;
 }
 
 export const MoveControls: React.FC<MoveControlsProps> = ({
@@ -24,6 +25,7 @@ export const MoveControls: React.FC<MoveControlsProps> = ({
   disabled = false,
   onReset,
   isResetting,
+  showNotification,
 }) => {
   const [showPanel, setShowPanel] = useState(false);
   const [targetX, setTargetX] = useState<number>(currentPosition?.x || 0);
@@ -31,12 +33,13 @@ export const MoveControls: React.FC<MoveControlsProps> = ({
   const [error, setError] = useState<string | null>(null);
 
   // Preset move amounts
-  const movePresets = [10, 20, 50];
+  const movePresets = [10, 15, 20];
 
   const handleMove = async (x: number, y: number) => {
     try {
       setError(null);
       await onMove(x, y);
+      // await onReset();
       setShowPanel(false);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Move failed");
@@ -55,7 +58,7 @@ export const MoveControls: React.FC<MoveControlsProps> = ({
 
   const handleDirectionMove = (
     direction: "up" | "down" | "left" | "right",
-    amount: number = 20,
+    amount: number = 1,
   ) => {
     let newX = targetX;
     let newY = targetY;
@@ -75,6 +78,17 @@ export const MoveControls: React.FC<MoveControlsProps> = ({
         break;
     }
 
+    if (newX < 0 || newX > 21) {
+      showNotification(`❌ Input should be between 0 and 21`, "error");
+
+      return;
+    }
+
+    if (newY < 0 || newY > 21) {
+      showNotification(`❌ Input should be between 0 and 21`, "error");
+
+      return;
+    }
     setTargetX(newX);
     setTargetY(newY);
   };
@@ -121,7 +135,7 @@ export const MoveControls: React.FC<MoveControlsProps> = ({
           {/* Direction Pad with Presets */}
           <div className="mb-4">
             <div className="text-sm text-gray-400 mb-2">
-              Quick Move (20 units):
+              Quick Move (1 units):
             </div>
             <div className="grid grid-cols-3 gap-2 max-w-xs mx-auto">
               <div></div>
@@ -190,7 +204,16 @@ export const MoveControls: React.FC<MoveControlsProps> = ({
                   type="number"
                   id="targetX"
                   value={targetX}
-                  onChange={(e) => setTargetX(parseInt(e.target.value) || 0)}
+                  onChange={(e) => {
+                    if (parseInt(e.target.value) > 21) {
+                      showNotification(
+                        `❌ Input should be less than or equal to 21`,
+                        "error",
+                      );
+                      return;
+                    }
+                    setTargetX(parseInt(e.target.value) || 0);
+                  }}
                   className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg"
                   disabled={isMoving}
                 />
@@ -203,7 +226,16 @@ export const MoveControls: React.FC<MoveControlsProps> = ({
                   type="number"
                   id="targetY"
                   value={targetY}
-                  onChange={(e) => setTargetY(parseInt(e.target.value) || 0)}
+                  onChange={(e) => {
+                    if (parseInt(e.target.value) > 21) {
+                      showNotification(
+                        `❌ Input should be less than or equal to 21`,
+                        "error",
+                      );
+                      return;
+                    }
+                    setTargetY(parseInt(e.target.value) || 0);
+                  }}
                   className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg"
                   disabled={isMoving}
                 />

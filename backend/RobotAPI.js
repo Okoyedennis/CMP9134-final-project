@@ -10,11 +10,32 @@ class RobotAPI {
     return RobotAPI.instance;
   }
 
+  async handleResponse(response, endpointName) {
+    const text = await response.text();
+
+    if (!response.ok) {
+      throw new Error(
+        `${endpointName} failed with status ${response.status}: ${text}`,
+      );
+    }
+
+    try {
+      return JSON.parse(text);
+    } catch (error) {
+      throw new Error(
+        `${endpointName} did not return valid JSON. Raw response: ${text}`,
+      );
+    }
+  }
+
   async getStatus() {
     const response = await fetch(`${this.apiEndpoint}/api/status`, {
-      headers: { Authorization: `Bearer ${this.token}` },
+      headers: {
+        Authorization: `Bearer ${this.token}`,
+      },
     });
-    return await response.json();
+
+    return this.handleResponse(response, "getStatus");
   }
 
   async moveRobot(x, y) {
@@ -24,36 +45,43 @@ class RobotAPI {
         "Content-Type": "application/json",
         Authorization: `Bearer ${this.token}`,
       },
-
       body: JSON.stringify({ x, y }),
     });
-    return await response.json();
+
+    return this.handleResponse(response, "moveRobot");
   }
 
   async resetRobot() {
     const response = await fetch(`${this.apiEndpoint}/api/reset`, {
       method: "POST",
-      headers: { Authorization: `Bearer ${this.token}` },
-      // body: "",x
+      headers: {
+        Authorization: `Bearer ${this.token}`,
+      },
     });
 
-    return await response.json();
+    return this.handleResponse(response, "resetRobot");
   }
 
   async mapRobot() {
     const response = await fetch(`${this.apiEndpoint}/api/map`, {
       method: "GET",
-      headers: { Authorization: `Bearer ${this.token}` },
+      headers: {
+        Authorization: `Bearer ${this.token}`,
+      },
     });
-    return await response.json();
+
+    return this.handleResponse(response, "mapRobot");
   }
 
   async sensorRobot() {
     const response = await fetch(`${this.apiEndpoint}/api/sensor`, {
       method: "GET",
-      headers: { Authorization: `Bearer ${this.token}` },
+      headers: {
+        Authorization: `Bearer ${this.token}`,
+      },
     });
-    return await response.json();
+
+    return this.handleResponse(response, "sensorRobot");
   }
 }
 

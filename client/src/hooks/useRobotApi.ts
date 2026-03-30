@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import {
   robotApi,
+  type MapResponse,
   type MoveResponse,
   type ResetResponse,
   type RobotStatus,
@@ -20,11 +21,11 @@ interface UseRobotApiReturn {
   moveError: string | null;
   resetCoordinates: () => Promise<ResetResponse>;
   isResetting: boolean;
+  robotMapResp: MapResponse | null;
+  isRobotMapLoading: boolean;
 }
 
-export const useRobotApi = (
-  pollingInterval: number = 3000,
-): UseRobotApiReturn => {
+export const useRobotApi = (pollingInterval: number): UseRobotApiReturn => {
   const [robotStatus, setRobotStatus] = useState<RobotStatus | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isSending, setIsSending] = useState<boolean>(false);
@@ -36,6 +37,9 @@ export const useRobotApi = (
   const [moveError, setMoveError] = useState<string | null>(null);
 
   const [isResetting, setIsResetting] = useState<boolean>(false);
+
+  const [robotMapResp, setRobotMapResp] = useState<MapResponse | null>(null);
+  const [isRobotMapLoading, setIsRobotMapLoading] = useState<boolean>(false);
 
   const pollingRef = useRef<any | null>(null);
 
@@ -76,13 +80,9 @@ export const useRobotApi = (
 
       try {
         const response = await robotApi.sendMoveCommand(x, y);
-
-        // Show success message
-        console.log(`Move command sent: ${response.message}`);
-
-        // Immediately refresh status to get new position
-        await fetchStatus();
-
+        if (response.success) {
+          fetchStatus();
+        }
         return response;
       } catch (err) {
         const axiosError = err as AxiosError;
@@ -119,11 +119,9 @@ export const useRobotApi = (
     try {
       const response = await robotApi.sendResetCommand();
 
-      // Show success message
-      console.log(`Reset command sent: ${response.message}`);
-
-      // Immediately refresh status to get new position
-      await fetchStatus();
+      if (response.success) {
+        fetchStatus();
+      }
 
       return response;
     } catch (err) {
@@ -151,10 +149,47 @@ export const useRobotApi = (
     }
   }, [fetchStatus]);
 
+  const robotMap = useCallback(async () => {
+    setIsRobotMapLoading(true);
+    setError(null);
+
+    try {
+      const response = await robotApi.robotMap();
+      setRobotMapResp(response);
+      // Show success message
+    } catch (err) {
+      const axiosError = err as AxiosError;
+      let errorMessage = "Failed to move robot";
+
+      if (axiosError.response) {
+        // The server responded with an error
+        errorMessage = `Server error: ${axiosError.response.status}`;
+        console.error("Server response:", axiosError.response.data);
+      } else if (axiosError.request) {
+        // No response received
+        errorMessage = "Cannot connect to robot server";
+        setIsConnected(false);
+      } else {
+        // Request setup error
+        errorMessage = axiosError.message;
+      }
+
+      setError(errorMessage);
+
+      throw new Error(errorMessage);
+    } finally {
+      setIsRobotMapLoading(false);
+    }
+  }, []);
+
   // Initial fetch
   useEffect(() => {
     fetchStatus();
   }, [fetchStatus]);
+
+  useEffect(() => {
+    robotMap();
+  }, []);
 
   // Polling for real-time updates
   useEffect(() => {
@@ -184,5 +219,7 @@ export const useRobotApi = (
     moveError,
     resetCoordinates,
     isResetting,
+    isRobotMapLoading,
+    robotMapResp,
   };
 };

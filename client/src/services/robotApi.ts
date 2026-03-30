@@ -29,10 +29,21 @@ export interface MoveCommand {
 
 export interface MoveResponse {
   message: string;
+  success: boolean;
 }
 
 export interface ResetResponse {
   message: string;
+  success: boolean;
+}
+export interface MapResponse {
+  message: string;
+  data: {
+    width: number;
+    height: number;
+    grid: number[][];
+  };
+  success: boolean;
 }
 
 export interface CommandResponse {
@@ -72,13 +83,24 @@ class RobotApiService {
   // Send reset command
   async sendResetCommand(): Promise<ResetResponse> {
     try {
-      const response: AxiosResponse<ResetResponse> = await axiosInstance.post(
-        "/reset",
-        null,
-      );
+      const response: AxiosResponse<ResetResponse> =
+        await axiosInstance.post("/reset");
       return response.data;
     } catch (error) {
       console.error("Error in resetCommand:", error);
+      throw error;
+    }
+  }
+
+  // Robot Map
+  async robotMap(): Promise<MapResponse> {
+    try {
+      const response: AxiosResponse<MapResponse> =
+        await axiosInstance.get("/map");
+
+      return response.data;
+    } catch (error) {
+      console.error("Error in robotMap:", error);
       throw error;
     }
   }

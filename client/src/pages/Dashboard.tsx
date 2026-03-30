@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Bot, Wifi, WifiOff, AlertTriangle, UserCog } from "lucide-react";
 import { useRobotApi } from "../hooks/useRobotApi";
 import { RobotStatusDisplay } from "../components/RobotStatusDisplay";
 import { MoveControls } from "../components/MoveControls";
+import RobotMap from "../components/RobotMap";
 
 function App() {
   const {
@@ -17,11 +18,14 @@ function App() {
     moveError,
     resetCoordinates,
     isResetting,
-  } = useRobotApi(3000); // Poll every 3 seconds
+    robotMapResp: robotMapResp,
+    isRobotMapLoading,
+  } = useRobotApi(5000); // Poll every 5 seconds
 
   const [notifications, setNotifications] = useState<
     Array<{ id: string; message: string; type: string }>
   >([]);
+  console.log(apiStatusResp);
 
   const showNotification = (message: string, type: string = "info") => {
     const id = Date.now().toString();
@@ -34,7 +38,12 @@ function App() {
   const onMove = async (x: number, y: number) => {
     try {
       const response = await moveToCoordinates(x, y);
-      showNotification(`✅ ${response.message}`, "success");
+
+      if (response.success) {
+        showNotification(`✅ ${response.message}`, "success");
+      } else {
+        showNotification(`❌ Move failed: ${response.message}`, "error");
+      }
     } catch (error) {
       showNotification(`❌ Move failed: ${error}`, "error");
     }
@@ -48,6 +57,12 @@ function App() {
       showNotification(`❌ Move failed: ${error}`, "error");
     }
   };
+
+  useEffect(() => {
+    if (apiStatusResp?.success === false) {
+      showNotification(`❌ ${apiStatusResp?.message}`, "error");
+    }
+  }, [apiStatusResp]);
 
   return (
     <div className="min-h-screen bg-gcs-dark text-gray-100">
@@ -103,20 +118,22 @@ function App() {
             <div className="gcs-card">
               <h2 className="text-xl font-semibold mb-4 flex items-center">
                 <Bot className="w-5 h-5 mr-2 text-blue-500" />
-                Robot Camera View
+                Robot Environment Map
               </h2>
-              <div className="aspect-video bg-gcs-darker rounded-lg flex items-center justify-center border-2 border-gray-700">
-                <div className="text-center">
-                  <Bot className="w-24 h-24 mx-auto text-gray-600 mb-4" />
-                  <p className="text-gray-500">Live feed simulation</p>
-                  {apiStatusResp?.data?.status === "MOVING" && (
-                    <p className="text-blue-500 mt-2 animate-pulse">
-                      ▶ Robot moving to ({apiStatusResp.data.position.x},{" "}
-                      {apiStatusResp.data.position.y})
-                    </p>
-                  )}
-                </div>
-              </div>
+
+              <RobotMap
+                robotPosition={apiStatusResp?.data?.position}
+                robotMapResp={robotMapResp}
+                isRobotMapLoading={isRobotMapLoading}
+                error={error}
+              />
+
+              {apiStatusResp?.data?.status === "MOVING" && (
+                <p className="text-blue-500 mt-4 animate-pulse text-sm">
+                  ▶ Robot moving to ({apiStatusResp.data.position.x},{" "}
+                  {apiStatusResp.data.position.y})
+                </p>
+              )}
             </div>
           </div>
 
@@ -139,9 +156,10 @@ function App() {
             onMove={onMove}
             isMoving={isMoving}
             currentPosition={apiStatusResp?.data?.position}
-            disabled={!isConnected || apiStatusResp?.data?.status === "STUCK"}
+            disabled={!isConnected}
             onReset={onReset}
             isResetting={isResetting}
+            showNotification={showNotification}
           />
         </div>
 
