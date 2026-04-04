@@ -1,17 +1,21 @@
 import { useEffect, useState } from "react";
-import { Bot, Wifi, WifiOff, AlertTriangle, UserCog } from "lucide-react";
+import { Bot, Wifi, WifiOff, AlertTriangle } from "lucide-react";
 import { useRobotApi } from "../hooks/useRobotApi";
 import { RobotStatusDisplay } from "../components/RobotStatusDisplay";
 import { MoveControls } from "../components/MoveControls";
 import RobotMap from "../components/RobotMap";
+import useTelemetry from "../hooks/useTelemetry";
+import SensorPanel from "../components/SensorPanel";
+import Navbar from "../components/Navbar";
 
-function App() {
+const Dashboard = () => {
   const {
     robotStatus: apiStatusResp,
     isLoading,
     error,
     isConnected,
     lastUpdated,
+    setLastUpdated,
     refreshStatus,
     moveToCoordinates,
     isMoving,
@@ -20,12 +24,13 @@ function App() {
     isResetting,
     robotMapResp: robotMapResp,
     isRobotMapLoading,
-  } = useRobotApi(5000); // Poll every 5 seconds
+  } = useRobotApi(0); // Poll every 0 seconds
+
+  const { telemetry, isTelemetryConnected, telemetryError } = useTelemetry();
 
   const [notifications, setNotifications] = useState<
     Array<{ id: string; message: string; type: string }>
   >([]);
-  console.log(apiStatusResp);
 
   const showNotification = (message: string, type: string = "info") => {
     const id = Date.now().toString();
@@ -64,20 +69,16 @@ function App() {
     }
   }, [apiStatusResp]);
 
+  useEffect(() => {
+    setLastUpdated(new Date());
+  }, [telemetry]);
+
   return (
     <div className="min-h-screen bg-gcs-dark text-gray-100">
       {/* Navigation - same as before */}
+      <Navbar active="dashboard" />
 
       <main className="container mx-auto px-4 py-6">
-        {/* User Role Banner */}
-        <div className="mb-6 p-4 bg-blue-900/50 border border-blue-800 rounded-lg flex items-center">
-          <UserCog className="w-5 h-5 mr-3 text-blue-400" />
-          <span>
-            Current Role: <strong className="text-blue-400">COMMANDER</strong>
-            <span className="text-gray-400 ml-2">(Full control access)</span>
-          </span>
-        </div>
-
         {/* Connection Status */}
         <div
           className={`mb-4 p-3 rounded-lg text-sm flex items-center justify-between ${
@@ -111,6 +112,19 @@ function App() {
           </button>
         </div>
 
+        <div
+          className={`mb-4 p-3 rounded-lg text-sm flex items-center justify-between ${
+            isTelemetryConnected
+              ? "bg-blue-900/50 text-blue-400"
+              : "bg-yellow-900/50 text-yellow-400"
+          }`}>
+          <div>
+            {isTelemetryConnected
+              ? "Live telemetry connected"
+              : `Telemetry disconnected${telemetryError ? ` - ${telemetryError}` : ""}`}
+          </div>
+        </div>
+
         {/* Main Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Robot View */}
@@ -122,16 +136,20 @@ function App() {
               </h2>
 
               <RobotMap
-                robotPosition={apiStatusResp?.data?.position}
+                robotPosition={
+                  telemetry?.position || apiStatusResp?.data?.position
+                }
                 robotMapResp={robotMapResp}
                 isRobotMapLoading={isRobotMapLoading}
                 error={error}
               />
 
-              {apiStatusResp?.data?.status === "MOVING" && (
+              {(telemetry?.status || apiStatusResp?.data?.status) ===
+                "MOVING" && (
                 <p className="text-blue-500 mt-4 animate-pulse text-sm">
-                  ▶ Robot moving to ({apiStatusResp.data.position.x},{" "}
-                  {apiStatusResp.data.position.y})
+                  ▶ Robot moving to (
+                  {telemetry?.position?.x ?? apiStatusResp?.data?.position?.x},{" "}
+                  {telemetry?.position?.y ?? apiStatusResp?.data?.position?.y})
                 </p>
               )}
             </div>
@@ -140,6 +158,7 @@ function App() {
           {/* Status Panel */}
           <div className="lg:col-span-1">
             <RobotStatusDisplay
+              telemetry={telemetry}
               apiStatusResp={apiStatusResp}
               isLoading={isLoading}
               error={error}
@@ -147,6 +166,9 @@ function App() {
               lastUpdated={lastUpdated}
               onRefresh={refreshStatus}
             />
+            <div className="mt-6">
+              <SensorPanel sensorData={telemetry?.sensors || null} />
+            </div>
           </div>
         </div>
 
@@ -155,7 +177,9 @@ function App() {
           <MoveControls
             onMove={onMove}
             isMoving={isMoving}
-            currentPosition={apiStatusResp?.data?.position}
+            currentPosition={
+              telemetry?.position ?? apiStatusResp?.data?.position
+            }
             disabled={!isConnected}
             onReset={onReset}
             isResetting={isResetting}
@@ -193,6 +217,6 @@ function App() {
       </main>
     </div>
   );
-}
+};
 
-export default App;
+export default Dashboard;

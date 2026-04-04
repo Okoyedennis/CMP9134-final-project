@@ -8,8 +8,10 @@ import {
   RefreshCw,
 } from "lucide-react";
 import type { RobotStatus } from "../services/robotApi";
+import type { TelemetryData } from "../types";
 
 interface RobotStatusDisplayProps {
+  telemetry: TelemetryData | null;
   apiStatusResp: RobotStatus | null;
   isLoading: boolean;
   error: string | null;
@@ -19,6 +21,7 @@ interface RobotStatusDisplayProps {
 }
 
 export const RobotStatusDisplay: React.FC<RobotStatusDisplayProps> = ({
+  telemetry,
   apiStatusResp,
   isLoading,
   error,
@@ -103,11 +106,11 @@ export const RobotStatusDisplay: React.FC<RobotStatusDisplayProps> = ({
             <span className="text-gray-400">Battery</span>
             <div className="flex items-center">
               <Battery
-                className={`w-5 h-5 mr-2 ${getBatteryColor(apiStatusResp.data.battery)}`}
+                className={`w-5 h-5 mr-2 ${getBatteryColor(telemetry?.battery ?? apiStatusResp.data.battery)}`}
               />
               <span
-                className={`font-mono ${getBatteryColor(apiStatusResp.data.battery)}`}>
-                {apiStatusResp.data.battery}%
+                className={`font-mono ${getBatteryColor(telemetry?.battery ?? apiStatusResp.data.battery)}`}>
+                {telemetry?.battery ?? apiStatusResp.data.battery}%
               </span>
             </div>
           </div>
@@ -117,11 +120,11 @@ export const RobotStatusDisplay: React.FC<RobotStatusDisplayProps> = ({
             <span className="text-gray-400">Status</span>
             <div className="flex items-center">
               <Circle
-                className={`w-4 h-4 mr-2 ${getStatusColor(apiStatusResp.data.status)}`}
+                className={`w-4 h-4 mr-2 ${getStatusColor(telemetry?.status ?? apiStatusResp.data.status)}`}
               />
               <span
-                className={`font-mono ${getStatusColor(apiStatusResp.data.status)}`}>
-                {apiStatusResp.data.status}
+                className={`font-mono ${getStatusColor(telemetry?.status ?? apiStatusResp.data.status)}`}>
+                {telemetry?.status ?? apiStatusResp.data.status}
               </span>
             </div>
           </div>
@@ -131,16 +134,29 @@ export const RobotStatusDisplay: React.FC<RobotStatusDisplayProps> = ({
             <span className="text-gray-400">Position</span>
             <div className="flex items-center font-mono">
               <MapPin className="w-4 h-4 mr-2 text-red-400" />
-              <span>X: {apiStatusResp.data?.position?.x.toFixed(1)}</span>
+              <span>
+                X:{" "}
+                {telemetry?.position?.x.toFixed(1) ??
+                  apiStatusResp.data?.position?.x.toFixed(1)}
+              </span>
               <span className="mx-2">|</span>
-              <span>Y: {apiStatusResp.data?.position?.y.toFixed(1)}</span>
+              <span>
+                Y:{" "}
+                {telemetry?.position?.y.toFixed(1) ??
+                  apiStatusResp.data?.position?.y.toFixed(1)}
+              </span>
             </div>
           </div>
 
           {/* Last Updated */}
           {lastUpdated && (
             <div className="text-xs text-gray-500 text-right">
-              Updated: {lastUpdated.toLocaleTimeString()}
+              Updated:{" "}
+              {lastUpdated.toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: false,
+              })}
             </div>
           )}
         </div>

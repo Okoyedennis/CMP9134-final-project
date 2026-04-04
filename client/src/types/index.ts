@@ -46,9 +46,20 @@ export interface StatusIndicatorProps {
   className?: string;
 }
 
-export interface BatteryIndicatorProps {
-  level: number;
-  className?: string;
+export interface TelemetryData {
+  battery?: number;
+  status?: string;
+  position?: {
+    x: number;
+    y: number;
+  };
+  sensors?: {
+    E: number;
+    N: number;
+    S: number;
+    W: number;
+    lidar?: number[];
+  };
 }
 
 export interface ControlButtonProps {
@@ -67,4 +78,28 @@ export interface GCSContextType {
   emergencyStop: () => void;
   notifications: Notification[];
   clearNotification: (id: string) => void;
+}
+
+export interface SignupResponse {
+  data: {
+    message: string;
+    success: boolean;
+  };
+  status: number;
+  statusText: string;
+}
+
+export interface SigninResponse {
+  data: {
+    message: string;
+    success: boolean;
+    token: string;
+    user: {
+      id: string;
+      forename: string;
+      email: string;
+    };
+  };
+  status: number;
+  statusText: string;
 }

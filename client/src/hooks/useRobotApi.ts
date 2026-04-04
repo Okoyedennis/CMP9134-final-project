@@ -15,6 +15,7 @@ interface UseRobotApiReturn {
   refreshStatus: () => Promise<void>;
   isConnected: boolean;
   lastUpdated: Date | null;
+  setLastUpdated: React.Dispatch<React.SetStateAction<Date | null>>;
   isSending: boolean;
   moveToCoordinates: (x: number, y: number) => Promise<MoveResponse>;
   isMoving: boolean;
@@ -80,9 +81,9 @@ export const useRobotApi = (pollingInterval: number): UseRobotApiReturn => {
 
       try {
         const response = await robotApi.sendMoveCommand(x, y);
-        if (response.success) {
-          fetchStatus();
-        }
+        // if (response.success) {
+        //   fetchStatus();
+        // }
         return response;
       } catch (err) {
         const axiosError = err as AxiosError;
@@ -214,6 +215,7 @@ export const useRobotApi = (pollingInterval: number): UseRobotApiReturn => {
     refreshStatus: fetchStatus,
     isConnected,
     lastUpdated,
+    setLastUpdated,
     moveToCoordinates,
     isMoving,
     moveError,

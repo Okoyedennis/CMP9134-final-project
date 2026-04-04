@@ -4,9 +4,14 @@ import axios, {
   type InternalAxiosRequestConfig,
   type AxiosResponse,
 } from "axios";
+import { useCookies } from "../hooks/useCookies";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const TIMEOUT = parseInt(import.meta.env.VITE_API_TIMEOUT);
+
+const { getCookie } = useCookies();
+
+const gcs_token = getCookie("gcs_token");
 
 const axiosInstance: AxiosInstance = axios.create({
   baseURL: API_BASE_URL,
@@ -14,16 +19,13 @@ const axiosInstance: AxiosInstance = axios.create({
   headers: {
     "Content-Type": "application/json",
     Accept: "application/json",
+    Authorization: `Bearer ${gcs_token}`,
   },
 });
 
 // Request interceptor
 axiosInstance.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    // You can add auth tokens here later
-    // console.log(
-    //   `Making ${config.method?.toUpperCase()} request to: ${config.url}`,
-    // );
     return config;
   },
   (error: AxiosError) => {

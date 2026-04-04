@@ -1,4 +1,4 @@
-import robotAPI from "./RobotAPI.js";
+import robotAPI from "../RobotAPI.js";
 
 class RobotFacade {
   async moveRobot(x, y) {
@@ -18,7 +18,7 @@ class RobotFacade {
   async getStatus() {
     try {
       const data = await robotAPI.getStatus();
-      console.log(data);
+      // console.log(data);
 
       return { success: true, message: "Robot status fetched", data };
     } catch (error) {

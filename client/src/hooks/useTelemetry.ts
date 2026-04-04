@@ -1,0 +1,50 @@
+import { useEffect, useState } from "react";
+import type { TelemetryData } from "../types";
+
+const useTelemetry = () => {
+  const [telemetry, setTelemetry] = useState<TelemetryData | null>(null);
+  const [isTelemetryConnected, setIsTelemetryConnected] = useState(false);
+  const [telemetryError, setTelemetryError] = useState<string | null>(null);
+
+  const ROBOT_API_BASE_URL = import.meta.env.VITE_ROBOT_API_BASE_URL;
+
+  useEffect(() => {
+    const socket = new WebSocket(`${ROBOT_API_BASE_URL}/ws/telemetry`);
+
+    socket.onopen = () => {
+      setIsTelemetryConnected(true);
+      setTelemetryError(null);
+      console.log("Telemetry WebSocket connected");
+    };
+
+    socket.onmessage = (event) => {
+      try {
+        const data: TelemetryData = JSON.parse(event.data);
+        setTelemetry(data);
+      } catch (error) {
+        console.error("Invalid telemetry data:", error);
+      }
+    };
+
+    socket.onerror = () => {
+      setTelemetryError("Telemetry connection error");
+    };
+
+    socket.onclose = () => {
+      setIsTelemetryConnected(false);
+      console.log("Telemetry WebSocket disconnected");
+    };
+
+    return () => {
+      socket.close();
+    };
+  }, []);
+
+  return {
+    telemetry,
+    isTelemetryConnected,
+    telemetryError,
+  };
+};
+
+export default useTelemetry;
