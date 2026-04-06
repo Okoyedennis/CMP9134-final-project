@@ -14,6 +14,7 @@ export async function logMissionEvent({
       userId: req.user?.userId || null,
       userEmail: req.user?.email || null,
       userForename: req.user?.forename || null,
+      role: req.user?.role || null,
       commandType,
       commandPayload,
       statusBefore,

@@ -30,7 +30,7 @@ router.post("/signup", async (req, res) => {
     const newUser = await User.create({
       forename,
       email,
-      role: "Viewer",
+      role: "VIEWER",
       password: hashedPassword,
     });
 
@@ -90,7 +90,13 @@ router.post("/signin", async (req, res) => {
     }
 
     const token = jwt.sign(
-      { userId: user._id, email: user.email },
+      {
+        userId: user._id,
+        email: user.email,
+        role: user.role,
+        forename: user.forename,
+        createdAt: user.createdAt,
+      },
       process.env.JWT_SECRET,
       { expiresIn: "1d" },
     );
@@ -121,6 +127,55 @@ router.post("/signout", async (req, res) => {
     success: true,
     message: "Signed out successfully",
   });
+});
+
+// UPDATE ROLE
+router.patch("/users/:id/role", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { role } = req.body;
+
+    if (!role) {
+      return res.status(400).json({
+        success: false,
+        message: "Role is required",
+      });
+    }
+
+    const allowedRoles = ["COMMANDER", "VIEWER"];
+
+    if (!allowedRoles.includes(role)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid role. Allowed roles are COMMANDER and VIEWER",
+      });
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(
+      id,
+      { role },
+      { new: true, runValidators: true },
+    ).select("-password");
+
+    if (!updatedUser) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "User role updated successfully",
+      data: updatedUser,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Failed to update role",
+      error: error.message,
+    });
+  }
 });
 
 export default router;

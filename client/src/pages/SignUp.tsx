@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import AuthLayout from "../components/AuthLayout";
-import AuthInput from "../components/AuthInput";
+import TextInput from "../common/TextInput";
 import useAuthApi from "../hooks/useAuthApi";
 import { toast } from "react-toastify";
+import PageHelmet from "../components/PageHelmet";
+import Button from "../components/Button";
 
 const SignUp = () => {
   const [forename, setForename] = useState("");
@@ -51,48 +53,55 @@ const SignUp = () => {
   };
 
   return (
-    <AuthLayout
-      title="Create Account"
-      subtitle="Register to access the Ground Control Station">
-      <form onSubmit={handleSubmit} className="space-y-5">
-        <AuthInput
-          label="Forename"
-          value={forename}
-          onChange={setForename}
-          placeholder="Enter your forename"
-        />
+    <>
+      <PageHelmet
+        title="Sign Up | Robot GCS"
+        description="Create an account to access the Ground Control Station."
+      />
+      <AuthLayout
+        title="Create Account"
+        subtitle="Register to access the Ground Control Station">
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <TextInput
+            label="Forename"
+            value={forename}
+            onChange={setForename}
+            placeholder="Enter your forename"
+          />
 
-        <AuthInput
-          label="Email"
-          type="email"
-          value={email}
-          onChange={setEmail}
-          placeholder="Enter your email"
-        />
+          <TextInput
+            label="Email"
+            type="email"
+            value={email}
+            onChange={setEmail}
+            placeholder="Enter your email"
+          />
 
-        <AuthInput
-          label="Password"
-          type="password"
-          value={password}
-          onChange={setPassword}
-          placeholder="Enter your password"
-        />
+          <TextInput
+            label="Password"
+            type="password"
+            value={password}
+            onChange={setPassword}
+            placeholder="Enter your password"
+          />
 
-        <button
-          type="submit"
-          disabled={isLoading}
-          className="w-full bg-blue-600 hover:bg-blue-700 transition rounded-lg py-3 font-semibold disabled:opacity-60">
-          {isLoading ? "Creating account..." : "Sign Up"}
-        </button>
-      </form>
+          <Button
+            type="submit"
+            className="w-full bg-blue-600 hover:bg-blue-700 transition rounded-lg py-3 font-semibold disabled:opacity-60"
+            isLoading={isLoading}
+            disabled={isLoading}>
+            Sign Up
+          </Button>
+        </form>
 
-      <p className="text-sm text-gray-400 mt-6 text-center">
-        Already have an account?{" "}
-        <Link to="/signin" className="text-blue-400 hover:underline">
-          Sign in
-        </Link>
-      </p>
-    </AuthLayout>
+        <p className="text-sm text-gray-400 mt-6 text-center">
+          Already have an account?{" "}
+          <Link to="/signin" className="text-blue-400 hover:underline">
+            Sign in
+          </Link>
+        </p>
+      </AuthLayout>
+    </>
   );
 };
 

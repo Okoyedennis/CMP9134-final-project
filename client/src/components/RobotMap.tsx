@@ -23,7 +23,7 @@ const RobotMap: React.FC<RobotMapProps> = ({
   if (isRobotMapLoading) {
     return (
       <div className="aspect-video bg-gcs-darker rounded-lg flex items-center justify-center border-2 border-gray-700">
-        <p className="text-gray-400">Loading map...</p>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500" />
       </div>
     );
   }

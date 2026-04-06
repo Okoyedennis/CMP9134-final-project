@@ -17,6 +17,11 @@ const missionLogSchema = new mongoose.Schema(
       required: false,
       trim: true,
     },
+    role: {
+      type: String,
+      required: false,
+      trim: true,
+    },
     commandType: {
       type: String,
       required: true,

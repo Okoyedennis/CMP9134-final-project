@@ -5,6 +5,9 @@ import SignUp from "./pages/SignUp";
 import SignIn from "./pages/SignIn";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Logs from "./pages/Logs";
+import Users from "./pages/Users";
+import LidarSummary from "./pages/LidarSummary";
 
 function App() {
   return (
@@ -25,9 +28,12 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<SignIn />} />
-          <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/signin" element={<SignIn />} />
           <Route path="/signup" element={<SignUp />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/logs" element={<Logs />} />
+          <Route path="/users" element={<Users />} />
+          <Route path="/lidar" element={<LidarSummary />} />
         </Routes>
       </BrowserRouter>
     </>

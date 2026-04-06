@@ -1,6 +1,7 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   robotApi,
+  type LogsResponse,
   type MapResponse,
   type MoveResponse,
   type ResetResponse,
@@ -13,11 +14,13 @@ interface UseRobotApiReturn {
   isLoading: boolean;
   error: string | null;
   refreshStatus: () => Promise<void>;
+  robotMap: () => Promise<void>;
   isConnected: boolean;
   lastUpdated: Date | null;
   setLastUpdated: React.Dispatch<React.SetStateAction<Date | null>>;
   isSending: boolean;
   moveToCoordinates: (x: number, y: number) => Promise<MoveResponse>;
+  getLogs: (page: string, limit: string) => Promise<LogsResponse>;
   isMoving: boolean;
   moveError: string | null;
   resetCoordinates: () => Promise<ResetResponse>;
@@ -26,7 +29,7 @@ interface UseRobotApiReturn {
   isRobotMapLoading: boolean;
 }
 
-export const useRobotApi = (pollingInterval: number): UseRobotApiReturn => {
+export const useRobotApi = (): UseRobotApiReturn => {
   const [robotStatus, setRobotStatus] = useState<RobotStatus | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isSending, setIsSending] = useState<boolean>(false);
@@ -42,7 +45,7 @@ export const useRobotApi = (pollingInterval: number): UseRobotApiReturn => {
   const [robotMapResp, setRobotMapResp] = useState<MapResponse | null>(null);
   const [isRobotMapLoading, setIsRobotMapLoading] = useState<boolean>(false);
 
-  const pollingRef = useRef<any | null>(null);
+  // const pollingRef = useRef<any | null>(null);
 
   const fetchStatus = useCallback(async () => {
     setIsLoading(true);
@@ -81,9 +84,7 @@ export const useRobotApi = (pollingInterval: number): UseRobotApiReturn => {
 
       try {
         const response = await robotApi.sendMoveCommand(x, y);
-        // if (response.success) {
-        //   fetchStatus();
-        // }
+
         return response;
       } catch (err) {
         const axiosError = err as AxiosError;
@@ -183,6 +184,34 @@ export const useRobotApi = (pollingInterval: number): UseRobotApiReturn => {
     }
   }, []);
 
+  const getLogs = useCallback(
+    async (page: string, limit: string): Promise<LogsResponse> => {
+      setIsLoading(true);
+
+      try {
+        const logs = await robotApi.getLogs(page, limit);
+        return logs;
+      } catch (err) {
+        const axiosError = err as AxiosError;
+        let errorMessage = "Failed to fetch logs";
+
+        if (axiosError.response) {
+          errorMessage = `Server error: ${axiosError.response.status}`;
+        } else if (axiosError.request) {
+          errorMessage = "Cannot connect to robot server";
+        } else {
+          errorMessage = axiosError.message;
+        }
+
+        setError(errorMessage);
+        throw new Error(errorMessage);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [],
+  );
+
   // Initial fetch
   useEffect(() => {
     fetchStatus();
@@ -193,19 +222,19 @@ export const useRobotApi = (pollingInterval: number): UseRobotApiReturn => {
   }, []);
 
   // Polling for real-time updates
-  useEffect(() => {
-    if (pollingInterval > 0) {
-      pollingRef.current = setInterval(() => {
-        fetchStatus();
-      }, pollingInterval);
-    }
+  // useEffect(() => {
+  //   if (pollingInterval? > 0) {
+  //     pollingRef.current = setInterval(() => {
+  //       fetchStatus();
+  //     }, pollingInterval);
+  //   }
 
-    return () => {
-      if (pollingRef.current) {
-        clearInterval(pollingRef.current);
-      }
-    };
-  }, [fetchStatus, pollingInterval]);
+  //   return () => {
+  //     if (pollingRef.current) {
+  //       clearInterval(pollingRef.current);
+  //     }
+  //   };
+  // }, [fetchStatus, pollingInterval]);
 
   return {
     robotStatus,
@@ -213,6 +242,7 @@ export const useRobotApi = (pollingInterval: number): UseRobotApiReturn => {
     isSending,
     error,
     refreshStatus: fetchStatus,
+    robotMap,
     isConnected,
     lastUpdated,
     setLastUpdated,
@@ -223,5 +253,6 @@ export const useRobotApi = (pollingInterval: number): UseRobotApiReturn => {
     isResetting,
     isRobotMapLoading,
     robotMapResp,
+    getLogs,
   };
 };

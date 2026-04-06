@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import AuthLayout from "../components/AuthLayout";
-import AuthInput from "../components/AuthInput";
+import AuthInput from "../common/TextInput";
 import useAuthApi from "../hooks/useAuthApi";
 import { toast } from "react-toastify";
 import { useCookies } from "../hooks/useCookies";
+import PageHelmet from "../components/PageHelmet";
+import Button from "../components/Button";
 
 export default function SignIn() {
   const [email, setEmail] = useState("");
@@ -50,38 +52,47 @@ export default function SignIn() {
   };
 
   return (
-    <AuthLayout title="Sign In" subtitle="Access your robot control dashboard">
-      <form onSubmit={handleSubmit} className="space-y-5">
-        <AuthInput
-          label="Email"
-          type="email"
-          value={email}
-          onChange={setEmail}
-          placeholder="Enter your email"
-        />
+    <>
+      <PageHelmet
+        title="Sign In | Robot GCS"
+        description="Sign in to access the Ground Control Station."
+      />
+      <AuthLayout
+        title="Sign In"
+        subtitle="Access your robot control dashboard">
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <AuthInput
+            label="Email"
+            type="email"
+            value={email}
+            onChange={setEmail}
+            placeholder="Enter your email"
+          />
 
-        <AuthInput
-          label="Password"
-          type="password"
-          value={password}
-          onChange={setPassword}
-          placeholder="Enter your password"
-        />
+          <AuthInput
+            label="Password"
+            type="password"
+            value={password}
+            onChange={setPassword}
+            placeholder="Enter your password"
+          />
 
-        <button
-          type="submit"
-          disabled={isLoading}
-          className="w-full bg-blue-600 hover:bg-blue-700 transition rounded-lg py-3 font-semibold disabled:opacity-60">
-          {isLoading ? "Signing in..." : "Sign In"}
-        </button>
-      </form>
+          <Button
+            type="submit"
+            className="w-full bg-blue-600 hover:bg-blue-700 transition rounded-lg py-3 font-semibold disabled:opacity-60"
+            isLoading={isLoading}
+            disabled={isLoading}>
+            Sign Out
+          </Button>
+        </form>
 
-      <p className="text-sm text-gray-400 mt-6 text-center">
-        Don’t have an account?{" "}
-        <Link to="/signup" className="text-blue-400 hover:underline">
-          Create one
-        </Link>
-      </p>
-    </AuthLayout>
+        <p className="text-sm text-gray-400 mt-6 text-center">
+          Don’t have an account?{" "}
+          <Link to="/signup" className="text-blue-400 hover:underline">
+            Create one
+          </Link>
+        </p>
+      </AuthLayout>
+    </>
   );
 }

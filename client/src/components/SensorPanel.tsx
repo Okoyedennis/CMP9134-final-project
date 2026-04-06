@@ -15,6 +15,8 @@ const getSignalColor = (value: number) => {
 };
 
 const SensorPanel: React.FC<SensorPanelProps> = ({ sensorData }) => {
+  // console.log(sensorData?.lidar);
+
   return (
     <div className="gcs-card">
       <h2 className="text-xl font-semibold mb-4">Sensor Data</h2>
@@ -53,14 +55,6 @@ const SensorPanel: React.FC<SensorPanelProps> = ({ sensorData }) => {
                 {sensorData.W}
               </p>
             </div>
-          </div>
-
-          <div className="mt-4 bg-gcs-darker p-4 rounded-lg border border-gray-700">
-            <p className="text-gray-400 text-sm mb-2">LiDAR Scan</p>
-            <p className="text-gray-200 text-sm">360 readings available</p>
-            <p className="text-gray-500 text-xs mt-1">
-              Sample: {sensorData.lidar?.slice(0, 10).join(", ")}...
-            </p>
           </div>
         </>
       )}

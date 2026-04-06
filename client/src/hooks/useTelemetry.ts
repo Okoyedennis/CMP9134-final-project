@@ -5,10 +5,12 @@ const useTelemetry = () => {
   const [telemetry, setTelemetry] = useState<TelemetryData | null>(null);
   const [isTelemetryConnected, setIsTelemetryConnected] = useState(false);
   const [telemetryError, setTelemetryError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   const ROBOT_API_BASE_URL = import.meta.env.VITE_ROBOT_API_BASE_URL;
 
   useEffect(() => {
+    setIsLoading(true);
     const socket = new WebSocket(`${ROBOT_API_BASE_URL}/ws/telemetry`);
 
     socket.onopen = () => {
@@ -23,6 +25,8 @@ const useTelemetry = () => {
         setTelemetry(data);
       } catch (error) {
         console.error("Invalid telemetry data:", error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -44,6 +48,7 @@ const useTelemetry = () => {
     telemetry,
     isTelemetryConnected,
     telemetryError,
+    isLoading,
   };
 };
 

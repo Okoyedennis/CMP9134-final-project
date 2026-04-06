@@ -52,6 +52,46 @@ export interface CommandResponse {
   timestamp: string;
 }
 
+export interface UsersResponse {
+  success: boolean;
+  message: string;
+  data: {
+    id: string;
+    forename: string;
+    email: string;
+    role: string;
+  }[];
+}
+
+export interface LogsResponse {
+  success: boolean;
+  message: string;
+  data: {
+    _id: string;
+    role: string;
+    password: string;
+    createdAt: string;
+    updatedAt: string;
+    userId: string;
+    userEmail: string;
+    userForename: string;
+    commandType: string;
+    statusBefore: null;
+    statusAfter: null;
+    success: boolean;
+    errorMessage: null;
+    source: string;
+  }[];
+  pagination: {
+    totalLogs: number;
+    currentPage: number;
+    totalPages: number;
+    limit: number;
+    hasNextPage: boolean;
+    hasPrevPage: boolean;
+  };
+}
+
 // API Service class with Axios
 class RobotApiService {
   // Get robot status
@@ -125,7 +165,20 @@ class RobotApiService {
         await axiosInstance.get("/health");
       return response.data;
     } catch (error) {
-      console.error("Error in checkHealth:", error);
+      console.error("Error in check health:", error);
+      throw error;
+    }
+  }
+
+  // Check API LOGS
+  async getLogs(page: string, limit: string): Promise<LogsResponse> {
+    try {
+      const response: AxiosResponse<LogsResponse> = await axiosInstance.get(
+        `/logs?page=${page}&limit=${limit}`,
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error in fetching logs:", error);
       throw error;
     }
   }

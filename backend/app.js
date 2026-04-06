@@ -3,10 +3,11 @@ import authRoutes from "./routes/authRoutes.js";
 import cors from "cors";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
-import logRoutes from "./routes/logRoutes.js";
 import { logMissionEvent } from "./utils/logMissionEvent.js";
 import { verifyToken } from "./middleware/authMiddleware.js";
 import robotFacade from "./routes/RobotFacade.js";
+import MissionLog from "./models/MissionLog.js";
+import User from "./models/User.js";
 
 dotenv.config();
 
@@ -23,7 +24,7 @@ mongoose
   .catch((error) => console.error("MongoDB connection error:", error.message));
 
 app.use("/auth", authRoutes);
-app.use("/logs", logRoutes);
+// app.use("/logs", logRoutes);
 
 // MOVE
 app.post("/move", verifyToken, async (req, res) => {
@@ -136,6 +137,71 @@ app.get("/sensor", verifyToken, async (req, res) => {
   });
 
   return res.status(result.success ? 200 : 500).json(result);
+});
+
+// LOGS
+app.get("/logs", verifyToken, async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+
+    const skip = (page - 1) * limit;
+
+    const totalLogs = await MissionLog.countDocuments();
+
+    const logs = await MissionLog.find()
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+
+    const totalPages = Math.ceil(totalLogs / limit);
+
+    return res.json({
+      success: true,
+      message: "Mission logs fetched successfully",
+      data: logs,
+      pagination: {
+        totalLogs,
+        currentPage: page,
+        totalPages,
+        limit,
+        hasNextPage: page < totalPages,
+        hasPrevPage: page > 1,
+      },
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch logs",
+      error: error.message,
+    });
+  }
+});
+
+// GET USER
+app.get("/getUsers", verifyToken, async (req, res) => {
+  try {
+    const users = await User.find().sort({ createdAt: -1 });
+
+    const usersData = users.map((user) => ({
+      id: user._id,
+      forename: user.forename,
+      email: user.email,
+      role: user.role,
+    }));
+
+    return res.json({
+      success: true,
+      message: "Users fetched successfully",
+      data: usersData,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch users",
+      error: error.message,
+    });
+  }
 });
 
 app.listen(port, () => {

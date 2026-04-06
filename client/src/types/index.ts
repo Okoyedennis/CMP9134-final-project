@@ -103,3 +103,26 @@ export interface SigninResponse {
   status: number;
   statusText: string;
 }
+
+export interface DecodedToken {
+  userId: string;
+  email: string;
+  role: string;
+  forename: string;
+  exp: number;
+  iat: number;
+  createdAt: string;
+}
+
+export interface updateRoleResponse {
+  data: {
+    _id: string;
+    forename: string;
+    email: string;
+    role: string;
+    createdAt: string;
+    updatedAt: string;
+  };
+  success: boolean;
+  message: string;
+}

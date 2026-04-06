@@ -124,9 +124,9 @@ export const MoveControls: React.FC<MoveControlsProps> = ({
 
           {/* Current Position Display */}
           {currentPosition && (
-            <div className="mb-4 p-2 bg-gray-800 rounded-lg text-sm">
-              <div className="text-gray-400">Current Position:</div>
-              <div className="font-mono">
+            <div className="mb-4 p-2 bg-gray-800 rounded-lg text-sm ">
+              <div className="text-gray-400 text-center">Current Position:</div>
+              <div className="font-mono text-center">
                 X: {currentPosition.x}, Y: {currentPosition.y}
               </div>
             </div>
@@ -134,7 +134,7 @@ export const MoveControls: React.FC<MoveControlsProps> = ({
 
           {/* Direction Pad with Presets */}
           <div className="mb-4">
-            <div className="text-sm text-gray-400 mb-2">
+            <div className="text-sm text-gray-400 mb-2 text-center">
               Quick Move (1 units):
             </div>
             <div className="grid grid-cols-3 gap-2 max-w-xs mx-auto">
@@ -201,7 +201,7 @@ export const MoveControls: React.FC<MoveControlsProps> = ({
                   X
                 </label>
                 <input
-                  type="number"
+                  type="text"
                   id="targetX"
                   value={targetX}
                   onChange={(e) => {
@@ -223,7 +223,7 @@ export const MoveControls: React.FC<MoveControlsProps> = ({
                   Y
                 </label>
                 <input
-                  type="number"
+                  type="text"
                   id="targetY"
                   value={targetY}
                   onChange={(e) => {
