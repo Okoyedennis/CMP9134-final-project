@@ -13,12 +13,35 @@ Built as part of a software engineering project, this system focuses on real-tim
 
 ## 📸 Screenshots
 
-```md
+### Dashboard
+
+Displays real-time robot status including battery level, position, and movement state, along with controls to move and reset the robot.
+
 ![Dashboard](./screenshots/Dashboard.png)
-![Logs](./screenshots/Logs.png)
-![Users](./screenshots/Users.png)
+
+---
+
+### LiDAR Summary
+
+Provides a summary of LiDAR scan data, including closest and farthest objects, average distance, and directional readings.
+
 ![LidarSummary](./screenshots/LidarSummary.png)
-```
+
+---
+
+### Logs
+
+Shows a paginated list of mission logs, including user actions, command types, timestamps, and success or failure status.
+
+![Logs](./screenshots/Logs.png)
+
+---
+
+### Users
+
+Lists all registered users with their roles, and allows role updates between Commander and Viewer.
+
+![Users](./screenshots/Users.png)
 
 ---
 
@@ -183,7 +206,7 @@ cd CMP9134-final-project
 Frontend:
 
 ```bash
-cd client
+cd frontend
 npm install
 ```
 

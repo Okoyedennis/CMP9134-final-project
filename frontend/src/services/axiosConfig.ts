@@ -4,7 +4,7 @@ import axios, {
   type InternalAxiosRequestConfig,
   type AxiosResponse,
 } from "axios";
-import Cookies from "js-cookie";
+import Cookies from "../../node_modules/@types/js-cookie";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
