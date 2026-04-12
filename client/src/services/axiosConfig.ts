@@ -4,24 +4,41 @@ import axios, {
   type InternalAxiosRequestConfig,
   type AxiosResponse,
 } from "axios";
-import { useCookies } from "../hooks/useCookies";
+import Cookies from "js-cookie";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-const TIMEOUT = parseInt(import.meta.env.VITE_API_TIMEOUT);
 
-const { getCookie } = useCookies();
-
-const gcs_token = getCookie("gcs_token");
+// console.log("gcs_token: ", gcs_token);
 
 const axiosInstance: AxiosInstance = axios.create({
   baseURL: API_BASE_URL,
-  timeout: TIMEOUT,
   headers: {
     "Content-Type": "application/json",
-    Accept: "application/json",
-    Authorization: `Bearer ${gcs_token}`,
   },
 });
+
+axiosInstance.interceptors.request.use((config) => {
+  const token = Cookies.get("gcs_token");
+
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+
+  return config;
+});
+
+axiosInstance.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      Cookies.remove("gcs_token");
+
+      window.location.href = "/signin";
+    }
+
+    return Promise.reject(error);
+  },
+);
 
 // Request interceptor
 axiosInstance.interceptors.request.use(

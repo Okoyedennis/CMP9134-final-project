@@ -4,15 +4,23 @@ import { useRobotApi } from "../hooks/useRobotApi";
 import { RobotStatusDisplay } from "../components/RobotStatusDisplay";
 import { MoveControls } from "../components/MoveControls";
 import RobotMap from "../components/RobotMap";
-import useTelemetry from "../hooks/useTelemetry";
 import SensorPanel from "../components/SensorPanel";
 import Navbar from "../components/Navbar";
 import { useCookies } from "../hooks/useCookies";
 import { jwtDecode } from "jwt-decode";
-import type { DecodedToken } from "../types";
+import type { DecodedToken, TelemetryData } from "../types";
 import PageHelmet from "../components/PageHelmet";
 
-const Dashboard = () => {
+interface DashboardProps {
+  telemetry: TelemetryData | null;
+  isTelemetryConnected: boolean;
+  telemetryError: string | null;
+}
+const Dashboard: React.FC<DashboardProps> = ({
+  telemetry,
+  isTelemetryConnected,
+  telemetryError,
+}) => {
   const {
     robotStatus: apiStatusResp,
     isLoading,
@@ -30,8 +38,6 @@ const Dashboard = () => {
     isRobotMapLoading,
     robotMap,
   } = useRobotApi();
-
-  const { telemetry, isTelemetryConnected, telemetryError } = useTelemetry();
 
   const { getCookie } = useCookies();
 
@@ -91,6 +97,7 @@ const Dashboard = () => {
   useEffect(() => {
     setLastUpdated(new Date());
   }, [telemetry]);
+  // console.log(telemetry);
 
   return (
     <>

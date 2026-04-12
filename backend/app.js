@@ -24,7 +24,6 @@ mongoose
   .catch((error) => console.error("MongoDB connection error:", error.message));
 
 app.use("/auth", authRoutes);
-// app.use("/logs", logRoutes);
 
 // MOVE
 app.post("/move", verifyToken, async (req, res) => {

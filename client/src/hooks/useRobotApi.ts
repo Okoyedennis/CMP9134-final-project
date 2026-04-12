@@ -221,21 +221,6 @@ export const useRobotApi = (): UseRobotApiReturn => {
     robotMap();
   }, []);
 
-  // Polling for real-time updates
-  // useEffect(() => {
-  //   if (pollingInterval? > 0) {
-  //     pollingRef.current = setInterval(() => {
-  //       fetchStatus();
-  //     }, pollingInterval);
-  //   }
-
-  //   return () => {
-  //     if (pollingRef.current) {
-  //       clearInterval(pollingRef.current);
-  //     }
-  //   };
-  // }, [fetchStatus, pollingInterval]);
-
   return {
     robotStatus,
     isLoading,

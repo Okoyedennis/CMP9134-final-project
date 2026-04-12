@@ -1,11 +1,15 @@
 import { ChartNoAxesColumn } from "lucide-react";
 import Navbar from "../components/Navbar";
 import PageHelmet from "../components/PageHelmet";
-import useTelemetry from "../hooks/useTelemetry";
+import type { TelemetryData } from "../types";
 
-const LidarSummary = () => {
-  const { telemetry, isLoading } = useTelemetry();
+interface LidarSummaryProps {
+  telemetry: TelemetryData | null;
 
+  isLoading: boolean;
+}
+
+const LidarSummary = ({ telemetry, isLoading }: LidarSummaryProps) => {
   const lidar = telemetry?.sensors?.lidar;
   const minDistance = lidar && lidar.length > 0 ? Math.min(...lidar) : 0;
   const maxDistance = lidar && lidar.length > 0 ? Math.max(...lidar) : 0;

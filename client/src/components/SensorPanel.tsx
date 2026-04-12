@@ -15,7 +15,7 @@ const getSignalColor = (value: number) => {
 };
 
 const SensorPanel: React.FC<SensorPanelProps> = ({ sensorData }) => {
-  // console.log(sensorData?.lidar);
+  // console.log(sensorData);
 
   return (
     <div className="gcs-card">

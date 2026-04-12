@@ -1,57 +1,304 @@
-# Ground Control Station - HCI Workshop
+Copy this version into your `README.md` 👇
 
-graph TD
-subgraph Ground_Control_Station
-UI[Web UI]
-API[Backend API]
-end
+---
 
-DB[Database]
-Sim[Virtual Robot (Docker)]
+# 🚀 Ground Control Station (GCS)
 
-UI --> API
-API --> DB
-API --> Sim
+![Node.js](https://img.shields.io/badge/Node.js-18+-green)
+![React](https://img.shields.io/badge/React-TypeScript-blue)
+![MongoDB](https://img.shields.io/badge/Database-MongoDB-green)
+![License](https://img.shields.io/badge/License-Academic-lightgrey)
 
-## Project Overview
+A web-based **Ground Control Station** for monitoring and controlling a virtual robot through a REST API.
 
-React + TypeScript + Tailwind CSS implementation of a robot control dashboard.
+Built as part of a software engineering project, this system focuses on real-time robot interaction, system monitoring, and audit logging.
 
-## Features Implemented
+---
 
-### Task 1: Wireframing
+## 📸 Screenshots
 
-- [x] Main dashboard layout
-- [x] Robot status display
-- [x] Navigation bar
-- [x] Role indicator
-- [x] Move robot detailed interaction
+```md
+![Dashboard](./screenshots/Dashboard.png)
+![Logs](./screenshots/Logs.png)
+![Users](./screenshots/Users.png)
+![LidarSummary](./screenshots/Lidar Summary.png)
+```
 
-### Task 2: Heuristic Evaluation
+---
 
-- [x] Peer feedback documented
-- [x] AI evaluation conducted
-- [x] Issues identified and fixed
+## 📖 Overview
 
-### Task 3: Interactive Prototype
+The Ground Control Station allows users to interact with a virtual robot in real time.
 
-- [x] React components with TypeScript
-- [x] State management
-- [x] Move panel with direction controls
-- [x] Emergency stop functionality
-- [x] Notifications system
+Users can:
 
-### Task 4: Accessibility Audit
+- monitor robot status
+- send movement commands
+- reset the robot
+- view environment maps
+- inspect sensor readings
+- review mission logs
 
-- [x] W3C validation passed
-- [x] Color contrast compliant
-- [x] Keyboard navigation
-- [x] ARIA labels
-- [x] Focus management
+The system is split into:
 
-## Type Safety
+- **Frontend** → dashboard and UI
+- **Backend** → authentication, logging, API integration
+- **Robot Simulator** → provides robot data
 
-- All components typed with TypeScript
-- Strict mode enabled
-- No `any` types used
-- Proper interface definitions
+---
+
+## ✨ Features
+
+- 🔐 Authentication (Sign up, Sign in, Sign out)
+- 👥 Role-based access (**Commander / Viewer**)
+- 🤖 Robot control system
+- 📊 Live robot status display
+- 🗺️ Map visualisation
+- 📡 Sensor data display
+- 📈 LiDAR scan summary
+- 🧾 Mission audit logs (with pagination)
+- ⚙️ User role management
+- 📱 Responsive UI
+
+---
+
+## 🧰 Tech Stack
+
+### Frontend
+
+- React
+- TypeScript
+- Tailwind CSS
+- Axios
+- React Router DOM
+- Lucide Icons
+
+### Backend
+
+- Node.js
+- Express
+- MongoDB
+- Mongoose
+- JWT Authentication
+- bcryptjs
+- node-fetch
+
+---
+
+## 🏗️ Architecture
+
+```
+Frontend (React)
+        ↓
+Backend (Express API)
+        ↓
+Robot Simulator API
+        ↓
+MongoDB (Logs + Users)
+```
+
+---
+
+## ⚙️ Core Functionalities
+
+### 🔐 Authentication
+
+- Email + password login
+- JWT-based authentication
+- Stored in localStorage
+
+### 👤 Role Management
+
+- **COMMANDER** → full control
+- **VIEWER** → limited access
+
+### 🤖 Robot Control
+
+- Move robot
+- Reset robot
+- Fetch live status
+- View map and sensors
+
+### 🧾 Mission Logging
+
+Every action logs:
+
+- timestamp
+- user
+- action
+- payload
+- success/failure
+
+---
+
+## 🔌 Robot API Endpoints
+
+```
+GET    /api/status
+POST   /api/move
+POST   /api/reset
+GET    /api/map
+GET    /api/sensor
+WS     /ws/telemetry
+```
+
+---
+
+## 📁 Project Structure
+
+### Frontend
+
+```
+src/
+  components/
+  pages/
+  services/
+  utils/
+  App.tsx
+```
+
+### Backend
+
+```
+backend/
+  models/
+  routes/
+  utils/
+  app.js
+  RobotAPI.js
+  RobotFacade.js
+```
+
+---
+
+## ⚡ Getting Started
+
+### 1. Clone repo
+
+```bash
+git clone https://github.com/Okoyedennis/CMP9134-final-project
+cd CMP9134-final-project
+```
+
+---
+
+### 2. Install dependencies
+
+Frontend:
+
+```bash
+cd client
+npm install
+```
+
+Backend:
+
+```bash
+cd backend
+npm install
+```
+
+---
+
+### 3. Setup environment
+
+#### Backend `.env`
+
+```env
+PORT=3000
+MONGO_URI=your_mongo_uri
+JWT_SECRET=your_secret
+```
+
+#### Frontend `.env`
+
+```env
+VITE_API_BASE_URL=http://localhost:3000
+VITE_ROBOT_API_BASE_URL=http://localhost:5000
+```
+
+---
+
+### 4. Run the app
+
+Backend:
+
+```bash
+npm run dev
+```
+
+Frontend:
+
+```bash
+cd client
+npm run dev
+```
+
+---
+
+### 5. Start robot simulator
+
+```
+http://localhost:5000
+```
+
+---
+
+## 📡 API Routes
+
+### Auth
+
+- POST `/auth/signup`
+- POST `/auth/signin`
+- POST `/auth/signout`
+
+### Robot
+
+- GET `/status`
+- POST `/move`
+- POST `/reset`
+- GET `/map`
+- GET `/sensor`
+
+### Users
+
+- GET `/users`
+- PATCH `/users/:id/role`
+
+### Logs
+
+- GET `/logs?page=1&limit=10`
+
+---
+
+## 🖥️ Pages
+
+- Sign In
+- Sign Up
+- Dashboard
+- LiDAR Summary
+- Logs
+- Users
+
+---
+
+## 🎯 UI Design
+
+- Clean control-room layout
+- Status cards
+- Role indicator
+- Striped tables
+- Notifications and loaders
+
+---
+
+## 👨‍💻 Author
+
+**Dennis Okoye**
+Computer Science — University of Lincoln
+
+---
+
+## 📜 License
+
+Academic use only.

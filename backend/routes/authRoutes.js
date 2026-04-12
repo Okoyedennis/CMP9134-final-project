@@ -2,6 +2,8 @@ import express from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
+import { logMissionEvent } from "../utils/logMissionEvent.js";
+import { verifyToken } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
@@ -130,7 +132,7 @@ router.post("/signout", async (req, res) => {
 });
 
 // UPDATE ROLE
-router.patch("/users/:id/role", async (req, res) => {
+router.patch("/users/:id/role", verifyToken, async (req, res) => {
   try {
     const { id } = req.params;
     const { role } = req.body;
@@ -158,11 +160,26 @@ router.patch("/users/:id/role", async (req, res) => {
     ).select("-password");
 
     if (!updatedUser) {
+      await logMissionEvent({
+        req,
+        commandType: "ROLE_UPDATE",
+        commandPayload: req.body,
+        success: false,
+        errorMessage: "User not found",
+      });
       return res.status(404).json({
         success: false,
         message: "User not found",
       });
     }
+
+    await logMissionEvent({
+      req,
+      commandType: "ROLE_UPDATE",
+      commandPayload: req.body,
+      success: true,
+      errorMessage: null,
+    });
 
     return res.status(200).json({
       success: true,

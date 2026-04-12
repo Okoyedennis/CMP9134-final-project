@@ -25,7 +25,7 @@ const missionLogSchema = new mongoose.Schema(
     commandType: {
       type: String,
       required: true,
-      enum: ["MOVE", "RESET", "STATUS", "MAP", "SENSOR"],
+      enum: ["MOVE", "RESET", "STATUS", "MAP", "SENSOR", "ROLE_UPDATE"],
     },
     commandPayload: {
       type: Object,

@@ -36,8 +36,8 @@ export default function SignIn() {
       const response = await signin(data);
 
       if (response.data && response.data.success) {
+        setCookie("gcs_token", response.data.token);
         toast.success(response.data.message);
-        setCookie("gcs_token", response.data.token, { path: "/" });
         setTimeout(() => {
           navigate("/dashboard");
         }, 1000);
@@ -82,7 +82,7 @@ export default function SignIn() {
             className="w-full bg-blue-600 hover:bg-blue-700 transition rounded-lg py-3 font-semibold disabled:opacity-60"
             isLoading={isLoading}
             disabled={isLoading}>
-            Sign Out
+            Sign In
           </Button>
         </form>
 

@@ -1,3 +1,5 @@
+import { Bot } from "lucide-react";
+
 type MapResponse = {
   width: number;
   height: number;
@@ -54,14 +56,12 @@ const RobotMap: React.FC<RobotMapProps> = ({
         {robotMapResp.data.grid.map((row: number[], y: number) =>
           row.map((cell, x) => {
             const isRobot =
-              robotPosition &&
-              robotPosition.x - 1 === x &&
-              robotPosition.y - 1 === y;
+              robotPosition && robotPosition.x === x && robotPosition.y === y;
 
             return (
               <div
                 key={`${x}-${y}`}
-                className={`w-4 h-4 sm:w-5 sm:h-5 rounded-sm border border-gray-800 ${
+                className={`flex aspect-square items-center justify-center text-[10px] font-medium w-6 h-6 sm:w-5 sm:h-5 rounded-sm border border-gray-800 ${
                   isRobot
                     ? "bg-blue-500"
                     : cell === 1
@@ -70,12 +70,13 @@ const RobotMap: React.FC<RobotMapProps> = ({
                 }`}
                 title={
                   isRobot
-                    ? `Robot position (${x + 1}, ${y + 1})`
+                    ? `Robot position (${x}, ${y})`
                     : cell === 1
-                      ? `Obstacle at (${x + 1}, ${y + 1})`
-                      : `Free space at (${x + 1}, ${y + 1})`
-                }
-              />
+                      ? `Obstacle at (${x}, ${y})`
+                      : `Free space at (${x}, ${y})`
+                }>
+                {isRobot ? <Bot size={22} /> : ""}
+              </div>
             );
           }),
         )}
