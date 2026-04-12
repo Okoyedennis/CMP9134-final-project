@@ -21,7 +21,7 @@ Built as part of a software engineering project, this system focuses on real-tim
 ![Dashboard](./screenshots/Dashboard.png)
 ![Logs](./screenshots/Logs.png)
 ![Users](./screenshots/Users.png)
-![LidarSummary](./screenshots/Lidar Summary.png)
+![LidarSummary](./screenshots/LidarSummary.png)
 ```
 
 ---
@@ -206,8 +206,8 @@ npm install
 
 ```env
 PORT=3000
-MONGO_URI=your_mongo_uri
-JWT_SECRET=your_secret
+MONGO_URI=mongodb+srv://okoyedennis7_db_user:kwuJK8MFPW5emgwX@cluster1.zvyowaj.mongodb.net/
+JWT_SECRET=dennis_super_secret_key
 ```
 
 #### Frontend `.env`
@@ -230,7 +230,6 @@ npm run dev
 Frontend:
 
 ```bash
-cd client
 npm run dev
 ```
 
