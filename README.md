@@ -1,7 +1,3 @@
-Copy this version into your `README.md` 👇
-
----
-
 # 🚀 Ground Control Station (GCS)
 
 ![Node.js](https://img.shields.io/badge/Node.js-18+-green)
