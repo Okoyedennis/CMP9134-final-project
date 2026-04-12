@@ -225,8 +225,8 @@ npm install
 
 ```env
 PORT=3000
-MONGO_URI=mongodb+srv://okoyedennis7_db_user:kwuJK8MFPW5emgwX@cluster1.zvyowaj.mongodb.net/
-JWT_SECRET=dennis_super_secret_key
+MONGO_URI=""
+JWT_SECRET=""
 ```
 
 #### Frontend `.env`
