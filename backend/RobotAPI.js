@@ -32,7 +32,7 @@ class RobotAPI {
   }
 
   async getStatus() {
-    const response = await fetch(`${this.apiEndpoint}/api/status`, {
+    const response = await fetch(`${this.apiEndpoint}/status`, {
       headers: {
         Authorization: `Bearer ${this.token}`,
       },
@@ -42,7 +42,7 @@ class RobotAPI {
   }
 
   async moveRobot(x, y) {
-    const response = await fetch(`${this.apiEndpoint}/api/move`, {
+    const response = await fetch(`${this.apiEndpoint}/move`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -55,7 +55,7 @@ class RobotAPI {
   }
 
   async resetRobot() {
-    const response = await fetch(`${this.apiEndpoint}/api/reset`, {
+    const response = await fetch(`${this.apiEndpoint}/reset`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${this.token}`,
@@ -66,7 +66,7 @@ class RobotAPI {
   }
 
   async mapRobot() {
-    const response = await fetch(`${this.apiEndpoint}/api/map`, {
+    const response = await fetch(`${this.apiEndpoint}/map`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${this.token}`,
@@ -77,7 +77,7 @@ class RobotAPI {
   }
 
   async sensorRobot() {
-    const response = await fetch(`${this.apiEndpoint}/api/sensor`, {
+    const response = await fetch(`${this.apiEndpoint}/sensor`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${this.token}`,
