@@ -1,10 +1,13 @@
 import fetch from "node-fetch";
+import "dotenv/config";
+
+const DOCKER_ROBOT_API = process.env.DOCKER_ROBOT_API;
 
 class RobotAPI {
   constructor() {
     if (!RobotAPI.instance) {
-      this.apiEndpoint = "http://localhost:5000";
-      this.token = "your-api-token";
+      this.apiEndpoint = DOCKER_ROBOT_API;
+      this.token = "";
       RobotAPI.instance = this;
     }
     return RobotAPI.instance;
