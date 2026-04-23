@@ -12,6 +12,7 @@ import { AxiosError } from "axios";
 interface UseRobotApiReturn {
   robotStatus: RobotStatus | null;
   isLoading: boolean;
+  isLoadingMove: boolean;
   error: string | null;
   refreshStatus: () => Promise<void>;
   robotMap: () => Promise<void>;
@@ -21,7 +22,6 @@ interface UseRobotApiReturn {
   isSending: boolean;
   moveToCoordinates: (x: number, y: number) => Promise<MoveResponse>;
   getLogs: (page: string, limit: string) => Promise<LogsResponse>;
-  isMoving: boolean;
   moveError: string | null;
   resetCoordinates: () => Promise<ResetResponse>;
   isResetting: boolean;
@@ -32,20 +32,18 @@ interface UseRobotApiReturn {
 export const useRobotApi = (): UseRobotApiReturn => {
   const [robotStatus, setRobotStatus] = useState<RobotStatus | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoadingMove, setIsLoadingMove] = useState<boolean>(false);
   const [isSending, setIsSending] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [isConnected, setIsConnected] = useState<boolean>(false);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
-  const [isMoving, setIsMoving] = useState<boolean>(false);
   const [moveError, setMoveError] = useState<string | null>(null);
 
   const [isResetting, setIsResetting] = useState<boolean>(false);
 
   const [robotMapResp, setRobotMapResp] = useState<MapResponse | null>(null);
   const [isRobotMapLoading, setIsRobotMapLoading] = useState<boolean>(false);
-
-  // const pollingRef = useRef<any | null>(null);
 
   const fetchStatus = useCallback(async () => {
     setIsLoading(true);
@@ -78,9 +76,8 @@ export const useRobotApi = (): UseRobotApiReturn => {
 
   const moveToCoordinates = useCallback(
     async (x: number, y: number): Promise<MoveResponse> => {
-      setIsMoving(true);
       setMoveError(null);
-      setIsSending(true);
+      setIsLoadingMove(true);
 
       try {
         const response = await robotApi.sendMoveCommand(x, y);
@@ -106,8 +103,7 @@ export const useRobotApi = (): UseRobotApiReturn => {
         setMoveError(errorMessage);
         throw new Error(errorMessage);
       } finally {
-        setIsMoving(false);
-        setIsSending(false);
+        setIsLoadingMove(false);
       }
     },
     [fetchStatus],
@@ -224,6 +220,7 @@ export const useRobotApi = (): UseRobotApiReturn => {
   return {
     robotStatus,
     isLoading,
+    isLoadingMove,
     isSending,
     error,
     refreshStatus: fetchStatus,
@@ -232,7 +229,6 @@ export const useRobotApi = (): UseRobotApiReturn => {
     lastUpdated,
     setLastUpdated,
     moveToCoordinates,
-    isMoving,
     moveError,
     resetCoordinates,
     isResetting,

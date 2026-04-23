@@ -67,6 +67,7 @@ export const RobotStatusDisplay: React.FC<RobotStatusDisplayProps> = ({
       </div>
     );
   }
+
   return (
     <div className="gcs-card">
       <div className="flex items-center justify-between mb-4">
@@ -124,7 +125,8 @@ export const RobotStatusDisplay: React.FC<RobotStatusDisplayProps> = ({
               />
               <span
                 className={`font-mono ${getStatusColor(telemetry?.status ?? apiStatusResp.data.status)}`}>
-                {telemetry?.status ?? apiStatusResp.data.status}
+                {telemetry?.status?.replace("_", " ") ??
+                  apiStatusResp.data.status}
               </span>
             </div>
           </div>

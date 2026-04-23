@@ -4,11 +4,13 @@ import axios, {
   type InternalAxiosRequestConfig,
   type AxiosResponse,
 } from "axios";
-import Cookies from "../../node_modules/@types/js-cookie";
+import { useCookies } from "../hooks/useCookies";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 // console.log("gcs_token: ", gcs_token);
+
+const { getCookie, removeCookie } = useCookies();
 
 const axiosInstance: AxiosInstance = axios.create({
   baseURL: API_BASE_URL,
@@ -18,7 +20,7 @@ const axiosInstance: AxiosInstance = axios.create({
 });
 
 axiosInstance.interceptors.request.use((config) => {
-  const token = Cookies.get("gcs_token");
+  const token = getCookie("gcs_token");
 
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
@@ -31,7 +33,7 @@ axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      Cookies.remove("gcs_token");
+      removeCookie("gcs_token");
 
       window.location.href = "/signin";
     }

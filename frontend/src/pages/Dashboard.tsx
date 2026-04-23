@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Bot, Wifi, WifiOff, AlertTriangle } from "lucide-react";
+import { Bot, Wifi, WifiOff, Move } from "lucide-react";
 import { useRobotApi } from "../hooks/useRobotApi";
 import { RobotStatusDisplay } from "../components/RobotStatusDisplay";
 import { MoveControls } from "../components/MoveControls";
@@ -10,6 +10,8 @@ import { useCookies } from "../hooks/useCookies";
 import { jwtDecode } from "jwt-decode";
 import type { DecodedToken, TelemetryData } from "../types";
 import PageHelmet from "../components/PageHelmet";
+import Button from "../components/Button";
+import { toast } from "react-toastify";
 
 interface DashboardProps {
   telemetry: TelemetryData | null;
@@ -21,6 +23,8 @@ const Dashboard: React.FC<DashboardProps> = ({
   isTelemetryConnected,
   telemetryError,
 }) => {
+  const [showMoveModal, setShowMoveModal] = useState(false);
+
   const {
     robotStatus: apiStatusResp,
     isLoading,
@@ -30,13 +34,12 @@ const Dashboard: React.FC<DashboardProps> = ({
     setLastUpdated,
     refreshStatus,
     moveToCoordinates,
-    isMoving,
-    moveError,
     resetCoordinates,
     isResetting,
     robotMapResp: robotMapResp,
     isRobotMapLoading,
     robotMap,
+    isLoadingMove,
   } = useRobotApi();
 
   const { getCookie } = useCookies();
@@ -53,16 +56,8 @@ const Dashboard: React.FC<DashboardProps> = ({
     decodedToken = jwtDecode(token);
   }
 
-  const [notifications, setNotifications] = useState<
-    Array<{ id: string; message: string; type: string }>
-  >([]);
-
-  const showNotification = (message: string, type: string = "info") => {
-    const id = Date.now().toString();
-    setNotifications((prev) => [...prev, { id, message, type }]);
-    setTimeout(() => {
-      setNotifications((prev) => prev.filter((n) => n.id !== id));
-    }, 3000);
+  const toggleMoveModal = () => {
+    setShowMoveModal(!showMoveModal);
   };
 
   const onMove = async (x: number, y: number) => {
@@ -70,34 +65,33 @@ const Dashboard: React.FC<DashboardProps> = ({
       const response = await moveToCoordinates(x, y);
 
       if (response.success) {
-        showNotification(`✅ ${response.message}`, "success");
+        toast.success(`✅ ${response.message}`);
       } else {
-        showNotification(`❌ Move failed: ${response.message}`, "error");
+        toast.error(`❌ Move failed: ${response.message}`);
       }
     } catch (error) {
-      showNotification(`❌ Move failed: ${error}`, "error");
+      toast.error(`❌ Move failed: ${error}`);
     }
   };
 
   const onReset = async () => {
     try {
       const response = await resetCoordinates();
-      showNotification(`✅ ${response.message}`, "success");
+      toast.success(`✅ ${response.message}`);
     } catch (error) {
-      showNotification(`❌ Move failed: ${error}`, "error");
+      toast.error(`❌ Move failed: ${error}`);
     }
   };
 
   useEffect(() => {
     if (apiStatusResp?.success === false) {
-      showNotification(`❌ ${apiStatusResp?.message}`, "error");
+      toast.error(`❌ ${apiStatusResp?.message}`);
     }
   }, [apiStatusResp]);
 
   useEffect(() => {
     setLastUpdated(new Date());
   }, [telemetry]);
-  // console.log(telemetry);
 
   return (
     <>
@@ -123,8 +117,8 @@ const Dashboard: React.FC<DashboardProps> = ({
                   Connected to robot API
                   {apiStatusResp && (
                     <span className="ml-2 text-xs">
-                      ({apiStatusResp?.data?.id} | {apiStatusResp?.data?.status}
-                      )
+                      ({apiStatusResp?.data?.id} |{" "}
+                      {apiStatusResp?.data?.status.replace("_", " ")})
                     </span>
                   )}
                 </>
@@ -135,12 +129,13 @@ const Dashboard: React.FC<DashboardProps> = ({
                 </>
               )}
             </div>
-            <button
+            <Button
+              type="button"
               onClick={refetchStatusAndMap}
               disabled={isLoading}
               className="px-3 py-1 bg-gray-700 hover:bg-gray-600 rounded-lg text-xs">
               {isLoading ? "Refreshing..." : "Refresh"}
-            </button>
+            </Button>
           </div>
 
           <div
@@ -202,54 +197,46 @@ const Dashboard: React.FC<DashboardProps> = ({
               <div className="mt-6">
                 <SensorPanel sensorData={telemetry?.sensors || null} />
               </div>
+              {decodedToken && decodedToken.role === "COMMANDER" && (
+                <Button
+                  type="button"
+                  onClick={toggleMoveModal}
+                  disabled={
+                    !isConnected ||
+                    telemetry?.status == "MOVING" ||
+                    isLoadingMove ||
+                    isResetting
+                  }
+                  className="control-btn flex items-center justify-center mt-6"
+                  aria-label="Open move controls">
+                  <Move className="w-5 h-5 mr-2" />
+                  {isLoadingMove
+                    ? "MOVING..."
+                    : isResetting
+                      ? "RESETTING..."
+                      : "MOVE ROBOT / RESET ROBOT"}
+                </Button>
+              )}
             </div>
-          </div>
-
-          {/* Move Controls */}
-          {decodedToken && decodedToken.role === "COMMANDER" && (
-            <div className="mt-6">
-              <MoveControls
-                onMove={onMove}
-                isMoving={isMoving}
-                currentPosition={
-                  telemetry?.position ?? apiStatusResp?.data?.position
-                }
-                disabled={!isConnected}
-                onReset={onReset}
-                isResetting={isResetting}
-                showNotification={showNotification}
-              />
-            </div>
-          )}
-
-          {/* Error Display */}
-          {moveError && (
-            <div className="mt-4 p-3 bg-red-900/50 border border-red-800 rounded-lg text-red-400">
-              <AlertTriangle className="w-4 h-4 inline mr-2" />
-              {moveError}
-            </div>
-          )}
-
-          {/* Notifications */}
-          <div className="fixed bottom-4 right-4 space-y-2 z-50">
-            {notifications.map((n) => (
-              <div
-                key={n.id}
-                className={`p-4 rounded-lg shadow-xl transform transition-all animate-slideIn
-                ${
-                  n.type === "error"
-                    ? "bg-red-600"
-                    : n.type === "success"
-                      ? "bg-green-600"
-                      : n.type === "warning"
-                        ? "bg-yellow-600"
-                        : "bg-blue-600"
-                }`}>
-                {n.message}
-              </div>
-            ))}
           </div>
         </main>
+
+        {/* Move Controls */}
+        {showMoveModal && (
+          <div className="mt-6">
+            <MoveControls
+              onMove={onMove}
+              currentPosition={
+                telemetry?.position ?? apiStatusResp?.data?.position
+              }
+              onReset={onReset}
+              toggleMoveModal={toggleMoveModal}
+              telemetry={telemetry}
+              isLoadingMove={isLoadingMove}
+              isResetting={isResetting}
+            />
+          </div>
+        )}
       </div>
     </>
   );

@@ -1,4 +1,4 @@
-import { ChevronLeft, ChevronRight, ScrollText } from "lucide-react";
+import { ChevronLeft, ChevronRight, Download, ScrollText } from "lucide-react";
 import Navbar from "../components/Navbar";
 import { useRobotApi } from "../hooks/useRobotApi";
 import { formatDate, formatTime } from "../common/Utils";
@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import type { LogsResponse } from "../services/robotApi";
 import SelectInput from "../common/SelectInput";
 import PageHelmet from "../components/PageHelmet";
+import Button from "../components/Button";
 
 const Logs = () => {
   const [logs, setLogs] = useState<LogsResponse | null>(null);
@@ -23,16 +24,40 @@ const Logs = () => {
     { name: "100 rows", id: "100" },
   ];
 
-  useEffect(() => {
-    const fetchLogs = async () => {
-      try {
-        const logsData = await getLogs(page.toString(), limit.toString());
-        setLogs(logsData);
-      } catch (error) {
-        console.error("Error fetching logs:", error);
-      }
-    };
+  const fetchLogs = async () => {
+    try {
+      const logsData = await getLogs(page.toString(), limit.toString());
+      setLogs(logsData);
+    } catch (error) {
+      console.error("Error fetching logs:", error);
+    }
+  };
 
+  const exportLogs = () => {
+    const csv = [
+      ["Forename", "Email", "Command Type", "Date", "Time", "Role"],
+      ...logs?.data!?.map((log) => [
+        log.userForename,
+        log.userEmail,
+        log.commandType,
+        formatDate(log.createdAt || ""),
+        formatTime(log.createdAt || ""),
+        log.role,
+      ]),
+    ]
+      .map((row) => row.join(","))
+      .join("\n");
+
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `audit_logs_${new Date().toISOString()}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  useEffect(() => {
     fetchLogs();
   }, [page, limit]);
 
@@ -46,10 +71,20 @@ const Logs = () => {
       <div className=" min-h-screen bg-gcs-dark text-gray-100 app_container">
         <Navbar active="logs" />
         <main className="container mx-auto px-4 py-6">
-          <h2 className="text-xl font-semibold mb-4 flex items-center">
-            <ScrollText className="w-5 h-5 mr-2 text-blue-500" />
-            Logs
-          </h2>
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-semibold flex items-center">
+              <ScrollText className="w-5 h-5 mr-2 text-blue-500" />
+              Logs
+            </h2>
+            <Button
+              type="button"
+              className="rounded-lg bg-blue-600 text-white text-sm transition outline-none"
+              onClick={exportLogs}
+              Icon={Download}
+              iconClassName="w-4 h-4">
+              Export CSV
+            </Button>
+          </div>
           {isLoading ? (
             <div className="flex flex-col items-center justify-center mt-20">
               <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-500" />

@@ -61,11 +61,11 @@ const RobotMap: React.FC<RobotMapProps> = ({
             return (
               <div
                 key={`${x}-${y}`}
-                className={`flex aspect-square items-center justify-center text-[10px] font-medium w-6 h-6 sm:w-5 sm:h-5 rounded-sm border border-gray-800 ${
+                className={`flex aspect-square items-center justify-center text-[10px] font-medium w-6 h-6 sm:w-5 sm:h-5 xl:w-7 xl:h-7 rounded-sm border border-gray-800 ${
                   isRobot
                     ? "bg-blue-500"
                     : cell === 1
-                      ? "bg-gray-900"
+                      ? "bg-red-600"
                       : "bg-gray-300"
                 }`}
                 title={
@@ -88,7 +88,7 @@ const RobotMap: React.FC<RobotMapProps> = ({
           Robot
         </div>
         <div className="flex items-center gap-2">
-          <span className="w-4 h-4 rounded-sm bg-gray-900 inline-block"></span>
+          <span className="w-4 h-4 rounded-sm bg-red-600 inline-block"></span>
           Obstacle
         </div>
         <div className="flex items-center gap-2">
