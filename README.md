@@ -201,66 +201,81 @@ cd CMP9134-final-project
 
 ---
 
-### 2. Install dependencies
+### 2. Prerequisites
 
-Frontend:
+Make sure you have the following installed:
 
-```bash
-cd frontend
-npm install
-```
-
-Backend:
-
-```bash
-cd backend
-npm install
-```
+Docker Desktop
+Git
 
 ---
 
-### 3. Setup environment
+### 3. Docker setup
 
-#### Backend `.env`
+This project runs using Docker Compose and includes:
 
-```env
+Frontend container
+Backend container
+Virtual Robot Simulator container
+
+The backend connects to:
+
+MongoDB Atlas for database storage
+Robot Simulator through Docker networking
+
+---
+
+### 4. Environment configuration
+
+The required environment values are already defined in docker-compose.yml.
+
+Backend environment includes:
+
 PORT=3000
-MONGO_URI=""
-JWT_SECRET=""
-```
+MONGO_URI=your_mongodb_connection_string
+JWT_SECRET=your_jwt_secret
+ROBOT_API_BASE_URL=http://robot-api:5000
 
-#### Frontend `.env`
+Frontend environment includes:
 
-```env
 VITE_API_BASE_URL=http://localhost:3000
-VITE_ROBOT_API_BASE_URL=http://localhost:5000
-```
+VITE_TELEMETRY_WS_URL=ws://localhost:5001
 
 ---
 
-### 4. Run the app
+### 5. Run the application with Docker
 
-Backend:
+Build and start all services:
 
-```bash
-npm run dev
-```
+docker compose up --build
 
-Frontend:
+To run in detached mode:
 
-```bash
-npm run dev
-```
+docker compose up --build -d
 
----
+To stop the services:
 
-### 5. Start robot simulator
-
-```
-http://localhost:5000
-```
+docker compose down
 
 ---
+
+### 6. Application URLs
+
+Once the containers are running, the application will be available at:
+
+Frontend: http://localhost:2000
+Backend: http://localhost:3000
+Robot API Docs: http://localhost:5001/docs
+
+### 7. Notes on Docker networking
+
+The backend connects to the robot simulator using the Docker service name:
+
+http://robot-api:5000
+
+The browser/frontend connects to the robot simulator WebSocket using the host-mapped port:
+
+ws://localhost:5001/ws/telemetry
 
 ## 📡 API Routes
 
