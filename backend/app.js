@@ -25,6 +25,13 @@ mongoose
 
 app.use("/auth", authRoutes);
 
+app.get("/", async (req, res) => {
+  return res.json({
+    success: true,
+    message: "Hello world",
+  });
+});
+
 // MOVE
 app.post("/move", verifyToken, async (req, res) => {
   const { x, y } = req.body;

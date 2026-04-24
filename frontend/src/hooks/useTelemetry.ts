@@ -7,11 +7,11 @@ const useTelemetry = () => {
   const [telemetryError, setTelemetryError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const ROBOT_API_BASE_URL = import.meta.env.VITE_ROBOT_API_BASE_URL;
+  const TELEMETRY_WS_URL = import.meta.env.VITE_TELEMETRY_WS_URL;
 
   useEffect(() => {
     setIsLoading(true);
-    const socket = new WebSocket(`${ROBOT_API_BASE_URL}/ws/telemetry`);
+    const socket = new WebSocket(`${TELEMETRY_WS_URL}/ws/telemetry`);
 
     socket.onopen = () => {
       setIsTelemetryConnected(true);

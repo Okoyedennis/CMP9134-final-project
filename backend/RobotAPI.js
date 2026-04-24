@@ -1,12 +1,12 @@
 import fetch from "node-fetch";
 import "dotenv/config";
 
-const DOCKER_ROBOT_API = process.env.DOCKER_ROBOT_API;
+const ROBOT_API_BASE_URL = process.env.ROBOT_API_BASE_URL;
 
 class RobotAPI {
   constructor() {
     if (!RobotAPI.instance) {
-      this.apiEndpoint = DOCKER_ROBOT_API;
+      this.apiEndpoint = `${ROBOT_API_BASE_URL}/api`;
       this.token = "";
       RobotAPI.instance = this;
     }
