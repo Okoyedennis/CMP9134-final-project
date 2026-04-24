@@ -231,15 +231,20 @@ The required environment values are already defined in docker-compose.yml.
 
 Backend environment includes:
 
+```
 PORT=3000
 MONGO_URI=your_mongodb_connection_string
-JWT_SECRET=your_jwt_secret
-ROBOT_API_BASE_URL=http://robot-api:5000
+JWT_SECRET=dennis_super_secret_key
+ROBOT_API_BASE_URL=http://localhost:5000
+```
 
 Frontend environment includes:
 
+```
 VITE_API_BASE_URL=http://localhost:3000
-VITE_TELEMETRY_WS_URL=ws://localhost:5001
+VITE_ROBOT_API_BASE_URL=http://localhost:5000
+VITE_TELEMETRY_WS_URL= ws://localhost:5001
+```
 
 ---
 
