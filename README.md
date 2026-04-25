@@ -226,14 +226,14 @@ Git
 
 This project runs using Docker Compose and includes:
 
-Frontend container
-Backend container
-Virtual Robot Simulator container
+- Frontend container
+- Backend container
+- Virtual Robot Simulator container
 
 The backend connects to:
 
-MongoDB Atlas for database storage
-Robot Simulator through Docker networking
+- MongoDB Atlas for database storage
+- Robot Simulator through Docker networking
 
 ---
 
@@ -245,7 +245,7 @@ Backend environment includes:
 
 ```
 PORT=3000
-MONGO_URI=your_mongodb_connection_string
+MONGO_URI=""
 JWT_SECRET=dennis_super_secret_key
 ROBOT_API_BASE_URL=http://localhost:5000
 ```
@@ -264,15 +264,15 @@ VITE_TELEMETRY_WS_URL= ws://localhost:5001
 
 Build and start all services:
 
-docker compose up --build
+- docker compose up --build
 
 To run in detached mode:
 
-docker compose up --build -d
+- docker compose up --build -d
 
 To stop the services:
 
-docker compose down
+- docker compose down
 
 ---
 
@@ -280,9 +280,9 @@ docker compose down
 
 Once the containers are running, the application will be available at:
 
-Frontend: http://localhost:2000
-Backend: http://localhost:3000
-Robot API Docs: http://localhost:5001/docs
+- Frontend: http://localhost:2000
+- Backend: http://localhost:3000
+- Robot API Docs: http://localhost:5001/docs
 
 ### 7. Notes on Docker networking
 
