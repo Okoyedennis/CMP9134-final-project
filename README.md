@@ -13,6 +13,18 @@ Built as part of a software engineering project, this system focuses on real-tim
 
 ## 📸 Screenshots
 
+### Sign In
+
+Allows users to securely sign in to the Ground Control Station using their registered email and password.
+
+![Signin](./screenshots/Signin.png)
+
+### Sign Up
+
+Provides a secure registration page where new users can create an account for the Ground Control Station.
+
+![Signin](./screenshots/Signup.png)
+
 ### Dashboard
 
 Displays real-time robot status including battery level, position, and movement state, along with controls to move and reset the robot.
